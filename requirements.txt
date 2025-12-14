@@ -1,0 +1,9 @@
+pandas
+yaspin
+requests
+slither-analyzer
+solc-select
+streamlit
+
+# download node.js in your system and add it to PATH
+# because we are using 'hardhat' which requires node.js to run
