@@ -170,52 +170,52 @@ def revise():
                     temp = []
                     for d in gravity:
                         if (data[m][p][it]["slither"]['stderr'].lower().count(
-                                ("https://github.com/crytic/slither/wiki/Detector-Documentation#" + d).lower())):
+                                ("https://github.com/crytic/slither/wiki/Detector-Documentation#" + d + "\n").lower())):
                             temp.append(d)
 
                         stats[m]['vulnerability'][gravity[d]] = (
                             stats[m]['vulnerability'][gravity[d]]
                             + data[m][p][it]["slither"]['stderr'].lower().count(
-                                ("https://github.com/crytic/slither/wiki/Detector-Documentation#" + d).lower()
+                                ("https://github.com/crytic/slither/wiki/Detector-Documentation#" + d + "\n").lower()
                             )
                         )
                         stats[m]['details'][p]['vulnerability'][gravity[d]] = (
                             stats[m]['details'][p]['vulnerability'][gravity[d]]
                             + data[m][p][it]["slither"]['stderr'].lower().count(
-                                ("https://github.com/crytic/slither/wiki/Detector-Documentation#" + d).lower()
+                                ("https://github.com/crytic/slither/wiki/Detector-Documentation#" + d + "\n").lower()
                             )
                         )
 
                     if verify_elements(gravity, temp):
                         stats[m]['zeroVulnerability'] += 1
                         stats[m]['details'][p]["zeroVulnerability"] += 1
+                    ## Unit tests analysis
+                    # if data[m][p][it]["testing"]['returnCode'] == 0:
+                    #     stats[m]['perfectTests'] += 1
+                    #     stats[m]['details'][p]['perfectTests'] += 1
 
-                    if data[m][p][it]["testing"]['returnCode'] == 0:
-                        stats[m]['perfectTests'] += 1
-                        stats[m]['details'][p]['perfectTests'] += 1
+                    # texte = data[m][p][it]["testing"]['stdout']
+                    # passing_match = re.search(r'(\d+) passing', texte)
+                    # failing_match = re.search(r'(\d+) failing', texte)
 
-                    texte = data[m][p][it]["testing"]['stdout']
-                    passing_match = re.search(r'(\d+) passing', texte)
-                    failing_match = re.search(r'(\d+) failing', texte)
+                    # passing = int(passing_match.group(1)) if passing_match else 0
+                    # failing = int(failing_match.group(1)) if failing_match else 0
 
-                    passing = int(passing_match.group(1)) if passing_match else 0
-                    failing = int(failing_match.group(1)) if failing_match else 0
+                    # total_tests = passing + failing
 
-                    total_tests = passing + failing
+                    # if total_tests > 0:
+                    #     ratio = passing / total_tests
+                    # else:
+                    #     ratio = 0
 
-                    if total_tests > 0:
-                        ratio = passing / total_tests
-                    else:
-                        ratio = 0
+                    # if (ratio == 1
+                    #         and data[m][p][it]["testing"]['returnCode'] == 0
+                    #         and verify_elements(gravity, temp)):
+                    #     stats[m]['PerfectContract'] += 1
+                    #     stats[m]['details'][p]['PerfectContract'] += 1
 
-                    if (ratio == 1
-                            and data[m][p][it]["testing"]['returnCode'] == 0
-                            and verify_elements(gravity, temp)):
-                        stats[m]['PerfectContract'] += 1
-                        stats[m]['details'][p]['PerfectContract'] += 1
-
-                    stats[m]['totalRatio'] += (ratio * 100)
-                    stats[m]['details'][p]['totalRatio'] += (ratio * 100)
+                    # stats[m]['totalRatio'] += (ratio * 100)
+                    # stats[m]['details'][p]['totalRatio'] += (ratio * 100)
 
                 else:
                     notCompiledTotal += 1

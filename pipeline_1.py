@@ -20,8 +20,11 @@ import subprocess
 import shutil
 import platform
 import traceback
-
 from yaspin import yaspin
+from dotenv import load_dotenv
+import time
+
+load_dotenv()
 
 # Configure solc only on non-Windows systems where solc-select is available.
 if platform.system() != "Windows":
@@ -41,7 +44,12 @@ nbIteration = 1
 #           "codellama"]
 # SOHEL edit
 # models = ["deepseek-coder1.3b"]
-models = ["gemma3_1b"]
+models = [
+        #   "openai/gpt-oss-20b:free",
+        #   "google/gemma-3-27b-it:free",
+          "mistralai/mistral-small-3.1-24b-instruct:free",
+        # "meta-llama/llama-3.3-70b-instruct-free", 
+        ]
 
 
 def cleanRepo():
@@ -55,7 +63,8 @@ def cleanRepo():
 
 
 def initDataset(dataSetName):
-    df = pd.read_csv(dataSetName, sep=";", encoding='latin1')
+    # df = pd.read_csv(dataSetName, sep=";", encoding='latin1')
+    df = pd.read_csv(dataSetName, encoding="latin1")
 
     nbPrompts = df.shape[0]
 
@@ -73,7 +82,7 @@ def initDataset(dataSetName):
         res = re.findall(pattern, df.iat[i, 1], re.DOTALL)
 
         test_exists = False
-
+        # write the test file if it exists in the prompt
         if res:
             content = res[0]
             js_path = os.path.join(extracted_tests_dir, df.iat[i, 0] + ".js")
@@ -81,7 +90,7 @@ def initDataset(dataSetName):
                 fichier.write(content)
             test_exists = os.path.exists(js_path)
 
-        print("\t- " + dataset[i][0] + ":  " + str(len(dataset[i][1])) + " " * 3 + str(test_exists))
+        print("\t- " + dataset[i][0] + ":  " + str(len(dataset[i][2])) + " " * 3 + str(test_exists))
 
     print("\n")
 
@@ -96,32 +105,64 @@ def initModels():
     return models
 
 
-def fetchOllama(model, prompt, temperature=0.2):
-    url = "http://localhost:11434/api/generate"
-    headers = {'Content-Type': 'application/json'}
-    payload = {
-        "model": model,
-        "prompt": prompt,
-        "stream": False,
-        "options": {
-            "temperature": temperature
-        }
-    }
+# def fetchOllama(model, prompt, temperature=0.2):
+#     url = "http://localhost:11434/api/generate"
+#     headers = {'Content-Type': 'application/json'}
+#     payload = {
+#         "model": model,
+#         "prompt": prompt,
+#         "stream": False,
+#         "options": {
+#             "temperature": temperature
+#         }
+#     }
 
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
+#     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
+#     if response.status_code == 200:
+#         return response.json()
+#     else:
+#         response.raise_for_status()
+
+def fetch_openrouter(model, prompt):
+    response = requests.post(
+        url="https://openrouter.ai/api/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {os.getenv('OPENROUTER_API_KEY')}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://Sohel-app-SC.com", # Optional. Site URL for rankings on openrouter.ai.
+            "X-Title": "Sohel app SC", # Optional. Site title for rankings on openrouter.ai.
+        },
+        data=json.dumps({
+            # "model": "meta-llama/llama-3.3-70b-instruct:free",
+            "model": model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        })
+    )
     if response.status_code == 200:
-        return response.json()
+        return response.json()  
     else:
         response.raise_for_status()
 
+def fetchLLM(model, prompt):
+    res = fetch_openrouter(model, prompt)
+
+    return {
+        "response": res["choices"][0]["message"]["content"],
+        "usage": res.get("usage", {})
+    }
 
 def compute():
     global nbIteration
 
     cleanRepo()
 
-    dataset = initDataset("simple_dataset.csv")
+    dataset = initDataset("15_prompt_generation.csv")
 
     models_list = initModels()
 
@@ -129,17 +170,14 @@ def compute():
 
     results = {}
 
-    hardhat_root = "hardhat_test_env"
-    hardhat_contracts_dir = os.path.join(hardhat_root, "contracts")
-    hardhat_tests_dir = os.path.join(hardhat_root, "test")
-
-    os.makedirs(hardhat_contracts_dir, exist_ok=True)
-    os.makedirs(hardhat_tests_dir, exist_ok=True)
-
+    
+    # For each model
     for i in range(len(models_list)):
         m = models_list[i]
-
-        model_output_dir = os.path.join("output", m)
+        
+        # check directory name is valid for windows, here model names with characters(:) not allowed in windows path
+        model_dir = re.sub(r'[<>:"/\\|?*]', '_', m)
+        model_output_dir = os.path.join("output", model_dir)
         if not os.path.exists(model_output_dir):
             os.makedirs(model_output_dir, exist_ok=True)
 
@@ -152,6 +190,7 @@ def compute():
         with yaspin(text="Processing...") as spinner:
             results[m] = {}
 
+            # For each prompt in the dataset
             for j in range(len(dataset)):
                 prompt = dataset[j]
 
@@ -172,7 +211,8 @@ def compute():
                     results[m][prompt[0]][k]["testing"] = {}
 
                     try:
-                        res = fetchOllama(m, prompt[1])
+                        time.sleep(1)  # to avoid hitting rate limits
+                        res = fetchLLM(m, "Write a smart contract using Solidity for the following details. Smart Contract Task- " + prompt[1] + " Description: " + prompt[2] + "\nWrite only the solidity code.")
 
                         res.pop("context", None)
                         res.pop("model", None)
@@ -240,41 +280,41 @@ def compute():
                         results[m][prompt[0]][k]["slither"]['stdout'] = result.stdout
                         results[m][prompt[0]][k]["slither"]['stderr'] = result.stderr
 
-                        # STEP 4 : Hardhat & testing
+                        # # STEP 4 : Hardhat & testing
 
-                        # print("STEP4: Testing the contract...")
-                        contract_dest = os.path.join(hardhat_contracts_dir, "contract.sol")
-                        if os.path.exists(contract_dest):
-                            os.remove(contract_dest)
-                        shutil.copy(sol_path, contract_dest)
+                        # # print("STEP4: Testing the contract...")
+                        # contract_dest = os.path.join(hardhat_contracts_dir, "contract.sol")
+                        # if os.path.exists(contract_dest):
+                        #     os.remove(contract_dest)
+                        # shutil.copy(sol_path, contract_dest)
 
-                        verify_src = os.path.join("output", "extracted_tests", prompt[0] + ".js")
-                        verify_dest = os.path.join(hardhat_tests_dir, "verify.js")
-                        if os.path.exists(verify_dest):
-                            os.remove(verify_dest)
-                        shutil.copy(verify_src, verify_dest)
+                        # verify_src = os.path.join("output", "extracted_tests", prompt[0] + ".js")
+                        # verify_dest = os.path.join(hardhat_tests_dir, "verify.js")
+                        # if os.path.exists(verify_dest):
+                        #     os.remove(verify_dest)
+                        # shutil.copy(verify_src, verify_dest)
 
-                        if platform.system() == "Windows":
-                            hardhat_command = ["npx.cmd", "hardhat", "test"]
-                        else:
-                            hardhat_command = ["npx", "hardhat", "test"]
+                        # if platform.system() == "Windows":
+                        #     hardhat_command = ["npx.cmd", "hardhat", "test"]
+                        # else:
+                        #     hardhat_command = ["npx", "hardhat", "test"]
 
-                        result = subprocess.run(
-                            hardhat_command,
-                            cwd=hardhat_root,
-                            capture_output=True,
-                            text=True
-                        )
-                        results[m][prompt[0]][k]["testing"]['returnCode'] = result.returncode
-                        results[m][prompt[0]][k]["testing"]['stdout'] = result.stdout
-                        results[m][prompt[0]][k]["testing"]['stderr'] = result.stderr
+                        # result = subprocess.run(
+                        #     hardhat_command,
+                        #     cwd=hardhat_root,
+                        #     capture_output=True,
+                        #     text=True
+                        # )
+                        # results[m][prompt[0]][k]["testing"]['returnCode'] = result.returncode
+                        # results[m][prompt[0]][k]["testing"]['stdout'] = result.stdout
+                        # results[m][prompt[0]][k]["testing"]['stderr'] = result.stderr
 
-                        print(
-                            "Process finished! contract: ["
-                            + str(promptPos) + "/" + str(len(dataset))
-                            + "], iteration: ["
-                            + str(k + 1) + "/" + str(nbIteration) + "]"
-                        )
+                        # print(
+                        #     "Process finished! contract: ["
+                        #     + str(promptPos) + "/" + str(len(dataset))
+                        #     + "], iteration: ["
+                        #     + str(k + 1) + "/" + str(nbIteration) + "]"
+                        # )
                     except Exception as e:
                         results[m][prompt[0]][k]["response"] = "error"
                         results[m][prompt[0]][k]["error"] = str(e)

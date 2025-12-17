@@ -1,4 +1,4 @@
-ï»¿Task,Task Title,Smart Contract Description
+Task,Task Title,Smart Contract Description
 Simple Storage,Simple Storage: Store and update a single integer value,"This smart contract is designed to store a single unsigned integer value on the blockchain. The stored value represents a simple piece of state that can be read by external users and updated under controlled conditions.
 
 The contract maintains one state variable of type unsigned integer, which is initialized when the contract is deployed (either to a default value such as zero or to a value provided at deployment time).
@@ -25,11 +25,11 @@ The contract enforces strict access control rules to ensure that only the curren
 Overall, the contract provides a minimal and clear ownership model, ensuring transparent ownership tracking, secure transfer of control, and predictable behavior throughout its lifecycle."
 Ether Piggy Bank,Ether Piggy Bank: Deposit and withdraw Ether,"This smart contract enables users to deposit Ether into the contract and later withdraw their funds according to clearly defined rules. The contract acts as a simple on-chain vault that securely tracks individual user balances.
 
-When a user sends Ether to the contract, the contract records the deposit by increasing the senderâ€™s internal balance. Each userâ€™s balance is tracked separately, typically using a mapping that associates blockchain addresses with the amount of Ether they have deposited. Deposits can be made multiple times, and each new deposit increases the userâ€™s existing balance.
+When a user sends Ether to the contract, the contract records the deposit by increasing the sender’s internal balance. Each user’s balance is tracked separately, typically using a mapping that associates blockchain addresses with the amount of Ether they have deposited. Deposits can be made multiple times, and each new deposit increases the user’s existing balance.
 
 The contract provides a withdrawal function that allows users to withdraw Ether from the contract. Only the user who owns a particular balance is allowed to withdraw funds from that balance. Users cannot withdraw more Ether than they have deposited, and they cannot withdraw funds belonging to other users.
 
-Before processing a withdrawal, the contract checks whether the caller has a sufficient balance to cover the requested withdrawal amount. If the balance is sufficient, the contract reduces the userâ€™s recorded balance by the withdrawn amount and then transfers the corresponding Ether to the userâ€™s address.
+Before processing a withdrawal, the contract checks whether the caller has a sufficient balance to cover the requested withdrawal amount. If the balance is sufficient, the contract reduces the user’s recorded balance by the withdrawn amount and then transfers the corresponding Ether to the user’s address.
 
 If a user attempts to withdraw more Ether than their recorded balance, or if they have no balance at all, the withdrawal request is rejected and the contract state remains unchanged. Similarly, if any other withdrawal condition fails, the transaction does not proceed and no Ether is transferred.
 
@@ -49,7 +49,7 @@ The contract provides read-only functions that allow anyone to view the total nu
 Overall, the contract ensures fair voting by enforcing one vote per eligible address, accurate vote counting, and transparent access to results."
 Message Board,Message Board: Public message posting,"This smart contract functions as a public message board on the blockchain, allowing users to post messages that can be read by anyone.
 
-The contract maintains a collection of messages stored on-chain. Each message consists of the text content provided by a user, along with metadata such as the senderâ€™s address and the time at which the message was posted. Messages are stored in the order they are submitted so that the full posting history can be preserved and accessed sequentially.
+The contract maintains a collection of messages stored on-chain. Each message consists of the text content provided by a user, along with metadata such as the sender’s address and the time at which the message was posted. Messages are stored in the order they are submitted so that the full posting history can be preserved and accessed sequentially.
 
 Any user is allowed to post a message by calling the message submission function and providing the message content. When a message is posted, the contract records the message and permanently adds it to the stored collection. Once stored, messages cannot be edited or deleted, ensuring transparency and immutability.
 
@@ -79,20 +79,20 @@ Simplified Token,Simplified Token: ERC20-like token logic,"This smart contract d
 
 The contract starts with an initial total token supply that is created at deployment and assigned to a designated owner or initial holder. The total supply represents the sum of all tokens in circulation and is tracked by the contract at all times. The contract ensures that the total supply remains consistent with all balance changes unless explicitly adjusted through defined supply management actions.
 
-Token holders can transfer tokens to other users by specifying a recipient and an amount. Before a transfer is executed, the contract verifies that the sender has a sufficient token balance. When a transfer occurs, the senderâ€™s balance is reduced by the transfer amount and the recipientâ€™s balance is increased by the same amount, preserving the overall total supply.
+Token holders can transfer tokens to other users by specifying a recipient and an amount. Before a transfer is executed, the contract verifies that the sender has a sufficient token balance. When a transfer occurs, the sender’s balance is reduced by the transfer amount and the recipient’s balance is increased by the same amount, preserving the overall total supply.
 
 The contract enforces the following constraints:
 
-* Transfers cannot exceed the senderâ€™s available balance.
+* Transfers cannot exceed the sender’s available balance.
 * Transfers to invalid or restricted addresses are not allowed.
 * Token balances cannot become negative.
 
 Basic supply management is supported through controlled actions, such as increasing or decreasing the total supply. These actions are restricted to an authorized entity, typically the contract owner. When new tokens are created, they are added to both the total supply and the balance of a designated account. When tokens are removed from circulation, the total supply is reduced accordingly, and the corresponding balances are updated to reflect the decrease.
 
-The contract provides transparency by allowing users to view balances and the total token supply at any time. It focuses on core token behaviorâ€”balance tracking, secure transfers, and limited supply controlâ€”without implementing advanced features such as allowances or delegated transfers."
+The contract provides transparency by allowing users to view balances and the total token supply at any time. It focuses on core token behavior—balance tracking, secure transfers, and limited supply control—without implementing advanced features such as allowances or delegated transfers."
 Whitelist Access,Whitelist Access: Permission-based actions,"This smart contract includes a whitelist mechanism that restricts access to specific actions so that only approved addresses are permitted to perform them. The whitelist represents a set of addresses that the contract recognizes as authorized participants.
 
-Certain sensitive or privileged actions within the contract can only be executed by addresses that are currently on the whitelist. When a user attempts to perform one of these restricted actions, the contract checks whether the callerâ€™s address is included in the whitelist. If the address is not whitelisted, the action is rejected and no state changes occur.
+Certain sensitive or privileged actions within the contract can only be executed by addresses that are currently on the whitelist. When a user attempts to perform one of these restricted actions, the contract checks whether the caller’s address is included in the whitelist. If the address is not whitelisted, the action is rejected and no state changes occur.
 
 The authority to manage the whitelist is assigned to a designated controller, typically the contract owner or an administrator defined at deployment. This controller has exclusive permission to add new addresses to the whitelist or remove existing ones. Adding an address grants it immediate permission to perform whitelisted actions, while removing an address immediately revokes those permissions.
 
@@ -116,7 +116,7 @@ The contract ensures that:
 * Withdrawals do not affect the balances of other recipients.
 
 The contract does not define how recipients or shares are modified; it only describes how incoming Ether is split and how recipients claim their funds."
-Simple Escrow,Simple Escrow: Buyerâ€“seller escrow,"This smart contract acts as an escrow agreement between three parties: a buyer, a seller, and an arbiter. Its purpose is to securely hold funds during a transaction and release them based on predefined conditions and approvals.
+Simple Escrow,Simple Escrow: Buyer–seller escrow,"This smart contract acts as an escrow agreement between three parties: a buyer, a seller, and an arbiter. Its purpose is to securely hold funds during a transaction and release them based on predefined conditions and approvals.
 
 The buyer deposits Ether into the contract to initiate the escrow. Once the funds are deposited, they are locked within the contract and cannot be accessed directly by either the buyer or the seller without following the escrow process.
 
@@ -131,3 +131,95 @@ The contract ensures that:
 * Funds remain securely locked until a valid release or refund condition is satisfied.
 * Neither party can unilaterally access the funds once deposited.
 * The arbiter provides a trusted resolution mechanism in the event of a dispute."
+Secure Escrow,Secure Escrow: Escrow with dispute resolution,"This smart contract functions as a secure escrow system designed to facilitate transactions between a buyer and a seller, with an optional third-party arbiter responsible for dispute resolution. The contract enforces strict role-based permissions to ensure that only authorized parties can perform specific actions and that funds remain protected throughout the escrow lifecycle.
+
+At the start of the process, the buyer deposits Ether into the contract to initiate the escrow. Once deposited, the funds are locked and cannot be withdrawn unilaterally by either the buyer or the seller. The contract records the deposit amount and marks the escrow as active.
+
+The seller is expected to fulfill the agreed-upon obligations, such as delivering goods or services. After fulfillment, the buyer can approve the transaction. Upon buyer approval, the contract releases the escrowed funds to the seller and finalizes the escrow, preventing any further actions or withdrawals.
+
+If the buyer does not approve the transaction or raises a concern, a dispute can be initiated. Either the buyer or the seller may trigger the dispute process while the escrow is active. When a dispute is open, normal approval-based fund release is suspended to prevent premature transfers.
+
+An arbiter, defined at contract deployment, has exclusive authority to resolve disputes. The arbiter reviews the dispute off-chain and then submits a decision to the contract. Based on the arbiter’s decision, the contract either releases the funds to the seller or refunds them to the buyer. Once the decision is executed, the escrow is permanently closed.
+
+The contract enforces the following security and permission constraints:
+
+* Only the buyer can deposit funds and approve successful completion.
+* Only the seller can receive funds upon approval or arbiter decision.
+* Only the buyer or seller can initiate a dispute.
+* Only the designated arbiter can resolve disputes.
+* Funds can only be released once and only according to a valid approval or arbitration outcome.
+
+Additional security considerations include preventing re-entrancy during fund transfers, ensuring that state changes occur before external payments, and blocking repeated or conflicting actions after escrow completion. The contract is designed to minimize trust assumptions by strictly enforcing roles, locking funds until clear outcomes are reached, and providing a transparent, rule-based dispute resolution process."
+DAO Governance,DAO Governance: Proposal and voting system,"This smart contract implements a decentralized governance system for a DAO, enabling its members to collectively make decisions through proposals and on-chain voting. The contract defines how proposals are created, how votes are cast and counted, and how approved proposals are executed.
+
+DAO members are defined as addresses that hold governance rights, such as ownership of governance tokens or explicit membership status. Only eligible members are allowed to create proposals and participate in voting. When a member creates a proposal, it includes a clear description of the action to be taken and is registered by the contract as an active proposal with a defined voting period.
+
+During the voting period, members can cast votes either in favor of or against the proposal. Each member’s voting power may be equal or weighted based on predefined criteria, such as token holdings at a specific snapshot. The contract ensures that each member can vote only once per proposal and that votes cannot be changed after submission.
+
+A quorum rule is enforced to ensure sufficient participation. A proposal is only considered valid if a minimum number or percentage of eligible voting power participates in the vote. In addition to quorum, the proposal must achieve a required approval threshold, such as a simple majority or a supermajority of the votes cast, in order to pass.
+
+Once the voting period has ended, the contract evaluates the outcome. If the quorum requirement is met and the approval threshold is satisfied, the proposal is marked as approved. Approved proposals can then be executed, either automatically by the contract or manually triggered by any member, depending on the governance design. Execution performs the predefined actions associated with the proposal and can only occur once.
+
+The contract enforces the following rules:
+
+* Only eligible members can create proposals and vote.
+* Voting is limited to the defined voting period.
+* Each member can vote only once per proposal.
+* Proposals must meet quorum and approval thresholds to pass.
+* Only approved proposals can be executed, and execution is irreversible.
+
+This governance mechanism ensures transparent, rule-based decision-making within the DAO, preventing unilateral control while enabling collective execution of agreed-upon actions."
+Supply Chain Tracking,Supply Chain Tracking: Lifecycle state transitions,"This smart contract provides a supply chain tracking system that records and manages the lifecycle of items as they move through predefined stages. Each item is uniquely identified and progresses through a fixed sequence of states, such as created, shipped, and delivered. The contract ensures that state transitions are transparent, ordered, and restricted to authorized participants.
+
+When an item is created, it is registered in the contract with an initial state indicating that it has been created or manufactured. Creation can only be performed by authorized entities, such as manufacturers or item originators. Once created, the item exists in the system and can be tracked throughout its lifecycle.
+
+State transitions occur in a strictly defined order. An item can only move from its current state to the next valid state in the sequence. For example, an item that is in the created state can be marked as shipped, but cannot be marked as delivered directly. Attempts to skip states or revert to a previous state are rejected by the contract.
+
+Different roles are associated with each stage of the supply chain. Only addresses with the appropriate role are permitted to update an item’s state. For example:
+
+* Manufacturers may create items.
+* Logistics providers or shippers may mark items as shipped.
+* Receivers or retailers may mark items as delivered.
+
+The contract enforces the following constraints:
+
+* Only authorized roles can perform specific state transitions.
+* Each item must follow the predefined state order without skipping or reversing stages.
+* Once an item reaches its final state, no further updates are allowed.
+* All state changes are recorded on-chain, providing an immutable history of the item’s progression.
+
+The contract focuses on maintaining accurate state tracking, enforcing role-based permissions, and ensuring the integrity of the supply chain process through controlled and verifiable state transitions."
+Time-Locked Wallet,Time-Locked Wallet: Time-based fund locking,"This smart contract implements a time-locked wallet that securely holds Ether and restricts withdrawals until a predefined unlock time has been reached. The contract is designed to enforce time-based access control, ensuring that funds cannot be accessed prematurely.
+
+Users can deposit Ether into the contract at any time. Once deposited, the funds are locked and associated with the wallet until the specified unlock timestamp. The contract continuously compares the current blockchain time against this unlock time to determine whether withdrawals are permitted.
+
+Only authorized addresses, such as the wallet owner or designated beneficiaries defined at deployment, are allowed to initiate withdrawals. Before the unlock time, any attempt to withdraw funds is rejected, regardless of the caller’s permissions. After the unlock time has passed, authorized parties may withdraw some or all of the stored Ether, according to the wallet’s withdrawal rules.
+
+The contract enforces the following behaviors and constraints:
+
+* Withdrawals are strictly disallowed before the unlock time.
+* The unlock condition is based on blockchain time and cannot be overridden by users.
+* Only authorized addresses can withdraw funds, even after the unlock time.
+* Funds remain securely stored in the contract until a valid withdrawal occurs.
+
+Once withdrawals are enabled, the contract transfers the requested amount of Ether to the authorized recipient and updates its internal balance accordingly. The contract does not automatically release funds; withdrawals must be explicitly initiated by an authorized party.
+
+This time-locked wallet provides a simple and secure mechanism for delayed fund access, supporting use cases such as savings wallets, vesting schedules, or delayed payments, while ensuring that timing and access rules are strictly enforced."
+Multi-Signature Wallet,Multi-Signature Wallet: Multiple approvals for transactions,"This smart contract implements a multi-signature wallet that is controlled by a group of designated owners. The wallet is designed to require approval from multiple owners before any transaction can be executed, providing enhanced security and shared control over funds.
+
+At deployment, a fixed set of owner addresses is defined along with a required approval threshold, representing the minimum number of owner confirmations needed to authorize a transaction. The wallet can hold Ether, which may be deposited by any address and remains under the control of the multi-signature rules.
+
+To initiate a transaction, an owner submits a proposal specifying the transaction details, such as the recipient address and the amount of Ether to be transferred. The contract records this proposal as a pending transaction and tracks approvals from individual owners.
+
+Other owners can review pending transactions and provide their approval. Each owner is allowed to approve a given transaction only once. The contract verifies that each approval comes from a valid owner and prevents duplicate or unauthorized confirmations. Approvals are accumulated until the required approval threshold is reached.
+
+Once the number of valid approvals meets or exceeds the predefined threshold, the transaction becomes eligible for execution. Any owner, or in some designs any address, may trigger execution. Upon execution, the contract verifies once more that the approval requirements are satisfied and that the transaction has not already been executed. The specified amount of Ether is then transferred to the designated recipient.
+
+The contract enforces the following constraints:
+
+* Only designated owners can propose or approve transactions.
+* A transaction cannot be executed without reaching the required number of approvals.
+* Each transaction can only be executed once.
+* Approved transactions cannot be altered after approvals have been collected.
+
+This multi-signature wallet ensures that no single owner can unilaterally move funds, requiring collective consent and providing transparency and accountability for all outgoing transactions."

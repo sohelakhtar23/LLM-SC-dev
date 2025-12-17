@@ -9,3 +9,6 @@ __pycache__/
 output_pipeline.zip
 
 .venv/
+.env
+temp/
+results_saved/
