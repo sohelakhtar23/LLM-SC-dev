@@ -1,0 +1,312 @@
+{
+  "run_at": "2025-12-30T22:39:08",
+  "predictions_file": "D:\\ANLAM_Lab\\Work \ud83d\udcbb\\sohel_SC\\vul_detection\\llm_vuln_resultsDec30_21_56_39.json",
+  "ground_truth_file": "D:\\ANLAM_Lab\\Work \ud83d\udcbb\\sohel_SC\\vul_detection\\dataset_clean\\dataset_index.json",
+  "labels": [
+    "reentrancy",
+    "bad_randomness",
+    "access_control",
+    "unchecked_ll_calls",
+    "null"
+  ],
+  "models": {
+    "deepseek-coder:1.3b": {
+      "n_evaluated": 30,
+      "n_vulnerable": 30,
+      "type_metrics_5class": {
+        "n": 30,
+        "accuracy": 0.13333333333333333,
+        "per_label": {
+          "reentrancy": {
+            "support": 11,
+            "tp": 4,
+            "fp": 5,
+            "fn": 7,
+            "precision": 0.4444444444444444,
+            "recall": 0.36363636363636365,
+            "f1": 0.39999999999999997
+          },
+          "bad_randomness": {
+            "support": 5,
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "access_control": {
+            "support": 9,
+            "tp": 0,
+            "fp": 0,
+            "fn": 9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "unchecked_ll_calls": {
+            "support": 5,
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "null": {
+            "support": 0,
+            "tp": 0,
+            "fp": 21,
+            "fn": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "reentrancy": {
+            "reentrancy": 4,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 7
+          },
+          "bad_randomness": {
+            "reentrancy": 2,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 3
+          },
+          "access_control": {
+            "reentrancy": 1,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 8
+          },
+          "unchecked_ll_calls": {
+            "reentrancy": 2,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 3
+          },
+          "null": {
+            "reentrancy": 0,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 0
+          }
+        }
+      },
+      "localization_within5": {
+        "eligible_count_type_correct_and_vulnerable": 4,
+        "line_predicted_count": 1,
+        "within_5_count": 0,
+        "within_5_rate": 0.0
+      },
+      "type_and_line_within5_correct_rate": 0.0
+    },
+    "llama3.2:1b": {
+      "n_evaluated": 30,
+      "n_vulnerable": 30,
+      "type_metrics_5class": {
+        "n": 30,
+        "accuracy": 0.03333333333333333,
+        "per_label": {
+          "reentrancy": {
+            "support": 11,
+            "tp": 1,
+            "fp": 1,
+            "fn": 10,
+            "precision": 0.5,
+            "recall": 0.09090909090909091,
+            "f1": 0.15384615384615385
+          },
+          "bad_randomness": {
+            "support": 5,
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "access_control": {
+            "support": 9,
+            "tp": 0,
+            "fp": 0,
+            "fn": 9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "unchecked_ll_calls": {
+            "support": 5,
+            "tp": 0,
+            "fp": 0,
+            "fn": 5,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "null": {
+            "support": 0,
+            "tp": 0,
+            "fp": 28,
+            "fn": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "reentrancy": {
+            "reentrancy": 1,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 10
+          },
+          "bad_randomness": {
+            "reentrancy": 1,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 4
+          },
+          "access_control": {
+            "reentrancy": 0,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 9
+          },
+          "unchecked_ll_calls": {
+            "reentrancy": 0,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 5
+          },
+          "null": {
+            "reentrancy": 0,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 0
+          }
+        }
+      },
+      "localization_within5": {
+        "eligible_count_type_correct_and_vulnerable": 1,
+        "line_predicted_count": 1,
+        "within_5_count": 0,
+        "within_5_rate": 0.0
+      },
+      "type_and_line_within5_correct_rate": 0.0
+    },
+    "gemma3:1b": {
+      "n_evaluated": 30,
+      "n_vulnerable": 30,
+      "type_metrics_5class": {
+        "n": 30,
+        "accuracy": 0.36666666666666664,
+        "per_label": {
+          "reentrancy": {
+            "support": 11,
+            "tp": 7,
+            "fp": 6,
+            "fn": 4,
+            "precision": 0.5384615384615384,
+            "recall": 0.6363636363636364,
+            "f1": 0.5833333333333334
+          },
+          "bad_randomness": {
+            "support": 5,
+            "tp": 3,
+            "fp": 7,
+            "fn": 2,
+            "precision": 0.3,
+            "recall": 0.6,
+            "f1": 0.4
+          },
+          "access_control": {
+            "support": 9,
+            "tp": 0,
+            "fp": 0,
+            "fn": 9,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          },
+          "unchecked_ll_calls": {
+            "support": 5,
+            "tp": 1,
+            "fp": 5,
+            "fn": 4,
+            "precision": 0.16666666666666666,
+            "recall": 0.2,
+            "f1": 0.1818181818181818
+          },
+          "null": {
+            "support": 0,
+            "tp": 0,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0
+          }
+        },
+        "confusion_matrix": {
+          "reentrancy": {
+            "reentrancy": 7,
+            "bad_randomness": 1,
+            "access_control": 0,
+            "unchecked_ll_calls": 3,
+            "null": 0
+          },
+          "bad_randomness": {
+            "reentrancy": 2,
+            "bad_randomness": 3,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 0
+          },
+          "access_control": {
+            "reentrancy": 4,
+            "bad_randomness": 3,
+            "access_control": 0,
+            "unchecked_ll_calls": 2,
+            "null": 0
+          },
+          "unchecked_ll_calls": {
+            "reentrancy": 0,
+            "bad_randomness": 3,
+            "access_control": 0,
+            "unchecked_ll_calls": 1,
+            "null": 1
+          },
+          "null": {
+            "reentrancy": 0,
+            "bad_randomness": 0,
+            "access_control": 0,
+            "unchecked_ll_calls": 0,
+            "null": 0
+          }
+        }
+      },
+      "localization_within5": {
+        "eligible_count_type_correct_and_vulnerable": 11,
+        "line_predicted_count": 11,
+        "within_5_count": 0,
+        "within_5_rate": 0.0
+      },
+      "type_and_line_within5_correct_rate": 0.0
+    }
+  },
+  "missing_ground_truth": {}
+}

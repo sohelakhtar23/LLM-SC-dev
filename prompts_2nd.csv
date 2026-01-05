@@ -1,0 +1,54 @@
+Exercise,Specification
+Ownership and Access Control,"Create a smart contract with a single owner.
+- The deployer becomes the owner.
+- Only the owner can execute restricted functions.
+- The owner can transfer ownership to another address.
+- Emit an event whenever ownership changes."
+Time-Locked Wallet,"Create a wallet contract where:
+- Ether can be deposited by anyone.
+- Withdrawals are only allowed after a fixed unlock timestamp set at deployment.
+- Only the beneficiary address can withdraw funds.
+- Withdrawals before the unlock time must revert."
+Simple Voting System,"Create a voting contract where:
+- An admin registers candidates.
+- Users can vote once.
+- Each vote increments the selected candidate’s count.
+- The admin can end the voting period.
+- Votes after voting ends must be rejected."
+ERC20-Like Token,"Create a simplified ERC20-style token:
+- Fixed total supply minted at deployment.
+- Track balances and allow transfers.
+- Transfers should fail if the sender has insufficient balance.
+- Emit events on transfers."
+Escrow Contract,"Create an escrow contract involving a buyer, seller, and arbiter:
+- Buyer deposits Ether.
+- Seller can mark the item as delivered.
+- Buyer can release funds to seller.
+- Arbiter can resolve disputes and send funds to either party.
+- Funds must only be released once."
+Multi-Signature Wallet,"Create a multi-signature wallet where:
+- Multiple owners are defined at deployment.
+- A transaction requires a minimum number of approvals before execution.
+- Owners can approve transactions.
+- Transactions can only be executed once."
+Auction Contract,"Create a highest-bid auction contract:
+- Auction has a start time and end time.
+- Users place bids with Ether.
+- Highest bid is tracked.
+- Non-winning bidders can withdraw their funds.
+- Auction winner is finalized after auction ends."
+Subscription Payment System,"Create a subscription contract where:
+- Users pay a fixed fee to subscribe.
+- Each subscription lasts a fixed duration.
+- Contract tracks subscription expiration per user.
+- Users cannot access premium functions after expiration."
+Crowdfunding Contract,"Create a crowdfunding contract:
+- Campaign has a funding goal and deadline.
+- Users can contribute Ether.
+- If goal is reached, creator can withdraw funds.
+- If goal is not reached by deadline, contributors can claim refunds."
+Role-Based Access Control,"Create a contract with multiple roles:
+- Admin can assign and revoke roles.
+- Different roles can call different functions.
+- Unauthorized calls must revert.
+- Role changes should emit events."
