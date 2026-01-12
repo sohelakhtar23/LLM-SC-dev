@@ -256,8 +256,6 @@ class SolidityBenchmark:
             result["timing"]["generation_seconds"] = round(generation_time, 2)
             result["generation"]["response"] = api_response.get("response", "")
             result["generation"]["total_duration_ns"] = api_response.get("total_duration", 0)
-            result["generation"]["eval_count"] = api_response.get("eval_count", 0)
-            result["generation"]["eval_duration_ns"] = api_response.get("eval_duration", 0)
             
             # Save raw response
             txt_path = os.path.join(contract_dir, f"{iteration}.txt")
