@@ -396,7 +396,7 @@ class SolidityBenchmark:
     def save_results(self) -> None:
         """Save results to JSON file."""
         results_path = os.path.join(self.output_dir, "benchmark_results.json")
-        summary_path = os.path.join(self.output_dir, "summary.json")
+        summary_path = os.path.join(self.output_dir, "llms_run_summary.json")
         
         with open(results_path, "w", encoding="utf-8") as f:
             json.dump(self.results, f, indent=2)

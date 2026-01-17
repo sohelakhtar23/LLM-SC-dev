@@ -112,6 +112,7 @@ VULNERABILITY_SEVERITY = {
 }
 
 SEVERITY_ORDER = ["High", "Medium", "Low", "Informational", "Optimization"]
+MALIGN_SEVERITIES = ["High", "Medium", "Low"]  # Only security-critical vulnerabilities
 
 
 class SlitherAnalyzer:
@@ -290,7 +291,7 @@ class SlitherAnalyzer:
     def analyze(self) -> None:
         """Perform complete analysis of all models."""
         print("=" * 80)
-        print(" " * 25 + "SLITHER ANALYSIS REPORT")
+        print(" " * 25 + "ANALYZING RESULTS")
         print("=" * 80 + "\n")
         
         for model_name, model_data in self.results.items():
@@ -299,12 +300,18 @@ class SlitherAnalyzer:
         
         print("\n[COMPLETED] Analysis finished\n")
     
-    def get_top_vulnerabilities(self, model_name: str, top_n: int = 10) -> List[Tuple[str, int]]:
+    def get_top_vulnerabilities(self, model_name: str, top_n: int = 10, malign_only: bool = False) -> List[Tuple[str, int]]:
         """Get the most common vulnerabilities for a model."""
         vuln_counts = self.vulnerability_details.get(model_name, {})
+        
+        if malign_only:
+            # Filter only malign vulnerabilities
+            vuln_counts = {k: v for k, v in vuln_counts.items() 
+                          if VULNERABILITY_SEVERITY.get(k, "Unknown") in MALIGN_SEVERITIES}
+        
         return sorted(vuln_counts.items(), key=lambda x: x[1], reverse=True)[:top_n]
     
-    def save_results(self, output_path: str = "output/slither_analysis.json") -> None:
+    def save_results(self, output_path: str = "output/final_analysis.json") -> None:
         """Save analysis results to JSON file."""
         output_data = {
             "analysis_timestamp": datetime.now().isoformat(),
@@ -317,11 +324,11 @@ class SlitherAnalyzer:
         
         print(f"[SAVED] Detailed analysis: {output_path}")
     
-    def generate_summary_report(self, output_path: str = "output/slither_summary.txt") -> None:
+    def generate_summary_report(self, output_path: str) -> None:
         """Generate a human-readable summary report."""
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write("=" * 80 + "\n")
-            f.write(" " * 25 + "SLITHER ANALYSIS SUMMARY\n")
+            f.write(" " * 25 + "FINAL ANALYSIS SUMMARY\n")
             f.write("=" * 80 + "\n\n")
             f.write(f"Analysis Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
             f.write(f"Results File: {self.results_path}\n\n")
@@ -363,68 +370,80 @@ class SlitherAnalyzer:
                 else:
                     f.write(f"  Clean Rate:            N/A\n\n")
                 
-                # Vulnerability Breakdown
-                f.write("VULNERABILITY BREAKDOWN:\n")
+                # Vulnerability Breakdown (Malign Only)
+                f.write("MALIGN VULNERABILITY BREAKDOWN:\n")
                 f.write("-" * 40 + "\n")
-                total_vulns = sum(stats["vulnerabilities"].values())
-                f.write(f"  Total Vulnerabilities: {total_vulns}\n\n")
+                malign_vulns_count = sum(stats["vulnerabilities"][sev] for sev in MALIGN_SEVERITIES)
+                f.write(f"  Total Malign Vulnerabilities: {malign_vulns_count}\n\n")
                 
-                for severity in SEVERITY_ORDER:
+                for severity in MALIGN_SEVERITIES:
                     count = stats["vulnerabilities"][severity]
-                    if total_vulns > 0:
-                        percentage = (count / total_vulns) * 100
+                    if malign_vulns_count > 0:
+                        percentage = (count / malign_vulns_count) * 100
                         f.write(f"  {severity:15} {count:6} ({percentage:5.2f}%)\n")
                     else:
                         f.write(f"  {severity:15} {count:6}\n")
                 
-                # Top Vulnerabilities
-                f.write("\n\nTOP 10 MOST COMMON VULNERABILITIES:\n")
+                # Top Malign Vulnerabilities
+                f.write("\n\nTOP 10 MOST COMMON MALIGN VULNERABILITIES:\n")
                 f.write("-" * 40 + "\n")
-                top_vulns = self.get_top_vulnerabilities(model_name, 10)
+                top_vulns = self.get_top_vulnerabilities(model_name, 10, malign_only=True)
                 
                 if top_vulns:
                     for i, (vuln_type, count) in enumerate(top_vulns, 1):
                         severity = VULNERABILITY_SEVERITY.get(vuln_type, "Unknown")
                         f.write(f"  {i:2}. {vuln_type:50} [{severity:13}] x{count}\n")
                 else:
-                    f.write("  No vulnerabilities detected\n")
+                    f.write("  No malign vulnerabilities detected\n")
                 
-                # Per-Prompt Summary
-                f.write("\n\nPER-PROMPT SUMMARY:\n")
+                # Per-Prompt Summary (Malign Only)
+                f.write("\n\nPER-PROMPT SUMMARY (MALIGN VULNERABILITIES):\n")
                 f.write("-" * 40 + "\n")
                 
                 for prompt_name, prompt_stats in stats["prompt_details"].items():
-                    total_vulns_prompt = sum(prompt_stats["vulnerabilities"].values())
+                    malign_vulns_prompt = sum(prompt_stats["vulnerabilities"][sev] for sev in MALIGN_SEVERITIES)
                     f.write(f"\n  {prompt_name}:\n")
                     f.write(f"    Compilation Success: {prompt_stats['compilation']['successful']}/{prompt_stats['compilation']['successful'] + prompt_stats['compilation']['failed']}")
                     f.write(f" ({prompt_stats['compilation']['success_rate']:.1f}%)\n")
                     f.write(f"    Clean Contracts:     {prompt_stats['clean_contracts']}\n")
-                    f.write(f"    Total Vulnerabilities: {total_vulns_prompt}\n")
+                    f.write(f"    Malign Vulnerabilities: {malign_vulns_prompt}\n")
+                    
+                    # Show breakdown by severity for this prompt
+                    for severity in MALIGN_SEVERITIES:
+                        count = prompt_stats["vulnerabilities"][severity]
+                        if count > 0:
+                            f.write(f"      - {severity}: {count}\n")
+                    
                     f.write(f"    Avg Gen Time:        {prompt_stats['timing']['avg_generation_time']:.2f}s\n")
             
             f.write("\n" + "=" * 80 + "\n")
-        
+            f.write("NOTE: This report excludes Informational and Optimization issues.\n")
+            f.write("      Only security-critical vulnerabilities (High, Medium, Low) are included.\n")
+            f.write("=" * 80 + "\n")
         print(f"[SAVED] Summary report: {output_path}")
-    
-    def print_summary(self) -> None:
-        """Print summary to console."""
-        print("=" * 80)
-        print(" " * 30 + "SUMMARY")
-        print("=" * 80 + "\n")
-        
-        for model_name, stats in self.statistics.items():
-            print(f"[{model_name}]")
-            print(f"  Compilation Success: {stats['compilation']['successful']}/{stats['compilation']['successful'] + stats['compilation']['failed']}")
-            print(f"  Success Rate:        {stats['compilation']['success_rate']:.2f}%")
-            print(f"  Clean Contracts:     {stats['clean_contracts']}/{stats['contracts_analyzed']}")
-            
-            total_vulns = sum(stats["vulnerabilities"].values())
-            print(f"  Total Vulnerabilities: {total_vulns}")
-            print(f"    High:          {stats['vulnerabilities']['High']}")
-            print(f"    Medium:        {stats['vulnerabilities']['Medium']}")
-            print(f"    Low:           {stats['vulnerabilities']['Low']}")
-            print()
 
+
+    def print_quick_summary(self, output_path: str) -> None:
+        """Print a quick summary to a text file and console."""
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write("=" * 80 + "\n")
+            f.write(" " * 25 + " QUICK SUMMARY\n")
+            f.write("=" * 80 + "\n")
+        
+            for model_name, stats in self.statistics.items():
+                f.write(f"[{model_name}]\n")
+                f.write(f"  Avg Generation Time: {stats['timing']['avg_generation_time']}\n")
+                f.write(f"  Compilation Rate:    {stats['compilation']['successful']}/{stats['compilation']['successful'] + stats['compilation']['failed']} ({stats['compilation']['success_rate']:.2f}%)\n")
+                f.write(f"  Clean Contracts:     {stats['clean_contracts']}/{stats['contracts_analyzed']}\n")
+
+                malign_vulns = sum(stats["vulnerabilities"][sev] for sev in MALIGN_SEVERITIES)
+                f.write(f"  Vulnerabilities Count: {malign_vulns}\n")
+                f.write(f"    High:          {stats['vulnerabilities']['High']}\n")
+                f.write(f"    Medium:        {stats['vulnerabilities']['Medium']}\n")
+                f.write(f"    Low:           {stats['vulnerabilities']['Low']}\n")
+                f.write("\n")
+        with open(output_path, 'r', encoding='utf-8') as f:
+            print(f.read())
 
 def main():
     analyzer = SlitherAnalyzer("output/benchmark_results.json")
@@ -432,9 +451,9 @@ def main():
     try:
         analyzer.load_results()
         analyzer.analyze()
-        analyzer.save_results("output/slither_analysis.json")
-        analyzer.generate_summary_report("output/slither_summary.txt")
-        analyzer.print_summary()
+        analyzer.save_results("output/final_analysis.json")
+        analyzer.generate_summary_report("output/detailed_summary.txt")
+        analyzer.print_quick_summary("output/quick_summary.txt")
         
         print("=" * 80)
         print("[SUCCESS] Analysis complete!")
