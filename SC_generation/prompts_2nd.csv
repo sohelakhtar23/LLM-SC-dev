@@ -1,54 +1,102 @@
 Exercise,Specification
-Ownership and Access Control,"Create a smart contract with a single owner.
-- The deployer becomes the owner.
-- Only the owner can execute restricted functions.
-- The owner can transfer ownership to another address.
-- Emit an event whenever ownership changes."
-Time-Locked Wallet,"Create a wallet contract where:
-- Ether can be deposited by anyone.
-- Withdrawals are only allowed after a fixed unlock timestamp set at deployment.
-- Only the beneficiary address can withdraw funds.
-- Withdrawals before the unlock time must revert."
-Simple Voting System,"Create a voting contract where:
-- An admin registers candidates.
-- Users can vote once.
-- Each vote increments the selected candidate’s count.
-- The admin can end the voting period.
-- Votes after voting ends must be rejected."
-ERC20-Like Token,"Create a simplified ERC20-style token:
-- Fixed total supply minted at deployment.
-- Track balances and allow transfers.
-- Transfers should fail if the sender has insufficient balance.
-- Emit events on transfers."
-Escrow Contract,"Create an escrow contract involving a buyer, seller, and arbiter:
-- Buyer deposits Ether.
-- Seller can mark the item as delivered.
-- Buyer can release funds to seller.
-- Arbiter can resolve disputes and send funds to either party.
-- Funds must only be released once."
-Multi-Signature Wallet,"Create a multi-signature wallet where:
-- Multiple owners are defined at deployment.
-- A transaction requires a minimum number of approvals before execution.
-- Owners can approve transactions.
-- Transactions can only be executed once."
-Auction Contract,"Create a highest-bid auction contract:
-- Auction has a start time and end time.
-- Users place bids with Ether.
-- Highest bid is tracked.
-- Non-winning bidders can withdraw their funds.
-- Auction winner is finalized after auction ends."
-Subscription Payment System,"Create a subscription contract where:
-- Users pay a fixed fee to subscribe.
-- Each subscription lasts a fixed duration.
-- Contract tracks subscription expiration per user.
-- Users cannot access premium functions after expiration."
-Crowdfunding Contract,"Create a crowdfunding contract:
-- Campaign has a funding goal and deadline.
-- Users can contribute Ether.
-- If goal is reached, creator can withdraw funds.
-- If goal is not reached by deadline, contributors can claim refunds."
-Role-Based Access Control,"Create a contract with multiple roles:
-- Admin can assign and revoke roles.
-- Different roles can call different functions.
-- Unauthorized calls must revert.
-- Role changes should emit events."
+Ownership and Access Control,"Create a smart contract with single owner access control using the Ownable pattern.
+Requirements:
+- The deployer becomes the initial owner
+- Implement a modifier to restrict functions to owner-only access
+- Include a function to transfer ownership to a new address with validation (non-zero address)
+- Emit an OwnershipTransferred event with old and new owner addresses
+- Prevent transferring ownership to the current owner
+Security: Validate new owner address is not zero address"
+Time-Locked Wallet,"Create a time-locked wallet contract with withdrawal restrictions.
+Requirements:
+- Accept Ether deposits from any address
+- Store beneficiary address and unlock timestamp (both immutable, set at deployment)
+- Implement withdrawal function restricted to beneficiary only
+- Reject withdrawal attempts before unlock time with clear error message
+- Emit events for deposits and withdrawals
+- Use block.timestamp for time checks
+Security: Ensure beneficiary cannot be zero address, validate unlock time is in the future"
+Simple Voting System,"Create a single-winner voting contract with admin controls.
+Requirements:
+- Admin can register candidates with unique IDs
+- Implement voter registration or allow any address to vote once
+- Track vote counts per candidate using mapping
+- Admin can end voting period (one-time action)
+- Reject votes after voting ends or duplicate votes from same address
+- Emit events for candidate registration, votes cast, and voting end
+- Return winning candidate after voting ends
+Security: Prevent admin from voting or manipulating results, validate candidate exists before voting"
+ERC20-Like Token,"Create a simplified ERC20-compatible token contract.
+Requirements:
+- Define token name, symbol, and decimals (18 recommended)
+- Mint fixed total supply to deployer at deployment
+- Implement transfer function with balance validation
+- Use mapping for balances (address => uint256)
+- Emit Transfer events on all transfers (including minting)
+- Revert transfers with insufficient balance or to zero address
+- Optional: implement approve/transferFrom for allowances
+Security: Use SafeMath or Solidity 0.8+ overflow protection, validate recipient addresses"
+Escrow Contract,"Create a three-party escrow contract with dispute resolution.
+Requirements:
+- Initialize with buyer, seller, and arbiter addresses at deployment
+- Buyer deposits exact Ether amount during contract creation (payable constructor)
+- Seller can mark item as delivered
+- Buyer can release payment to seller if satisfied
+- Arbiter can resolve disputes and allocate funds to buyer or seller
+- Track contract state (Created, Delivered, Released, Refunded, Disputed)
+- Emit events for all state changes
+- Ensure funds can only be released once using state checks
+Security: Use Checks-Effects-Interactions pattern, prevent reentrancy, validate all addresses are unique and non-zero"
+Multi-Signature Wallet,"Create a multi-signature wallet requiring multiple approvals.
+Requirements:
+- Initialize with array of owner addresses and required approval threshold
+- Validate threshold <= number of owners and > 0
+- Implement transaction proposal (target address, value, data)
+- Track approvals per transaction using nested mappings
+- Allow owners to approve transactions
+- Execute transaction only when threshold met
+- Prevent double-approvals from same owner
+- Emit events for submissions, approvals, and executions
+Security: Use call instead of transfer for execution, handle failed transactions, prevent reentrancy on execution"
+Auction Contract,"Create a highest-bid auction with automatic refunds.
+Requirements:
+- Set auction start time, end time, and minimum bid at deployment
+- Accept bids only during auction period (between start and end time)
+- Track highest bidder and highest bid amount
+- Automatically refund previous highest bidder when outbid
+- Implement manual withdrawal pattern for failed automatic refunds
+- Allow auction creator to withdraw winning bid after auction ends
+- Emit events for new bids, auction end, and withdrawals
+Security: Use pull payment pattern for refunds to prevent DOS attacks, validate bid is higher than current highest bid"
+Subscription Payment System,"Create a time-based subscription management system.
+Requirements:
+- Define subscription fee and duration (e.g., 30 days) as constants
+- Implement subscribe function accepting payment
+- Calculate and store expiration timestamp per user
+- Implement modifier to check active subscription status
+- Allow subscription renewal before or after expiration
+- Track total subscribers and revenue
+- Emit events for new subscriptions and renewals
+- Implement view function to check if user has active subscription
+Security: Validate payment amount matches subscription fee, handle expired subscriptions gracefully"
+Crowdfunding Contract,"Create a goal-based crowdfunding campaign with refund mechanism.
+Requirements:
+- Set campaign creator, funding goal, and deadline at deployment
+- Accept contributions only before deadline
+- Track contributions per address using mapping
+- Implement goal check (total contributions >= goal)
+- Creator can withdraw funds only if goal reached after deadline
+- Contributors can claim refunds only if goal not reached after deadline
+- Prevent double refunds using state tracking
+- Emit events for contributions, withdrawals, and refunds
+Security: Use Checks-Effects-Interactions pattern, prevent reentrancy on refunds, validate deadline is in the future"
+Role-Based Access Control,"Create a flexible role-based access control (RBAC) system.
+Requirements:
+- Define multiple roles as bytes32 constants (ADMIN_ROLE, MANAGER_ROLE, USER_ROLE)
+- Admin (deployer) can grant and revoke roles
+- Implement modifier to check if caller has specific role
+- Track roles using nested mapping (role => address => bool)
+- Create sample functions demonstrating different role requirements
+- Admin can renounce their own role
+- Emit RoleGranted and RoleRevoked events
+Security: Validate addresses are not zero, ensure at least one admin exists, prevent role escalation"

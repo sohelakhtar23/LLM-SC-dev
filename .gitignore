@@ -14,3 +14,6 @@ SC_generation/node_modules/
 SC_generation/package-lock.json
 SC_generation/package.json
 SC_generation/output_temp/
+
+# virtual_env for WSL(Windows Subsystem for Linux), to run gas_analyzer.py
+venv/ 
