@@ -1,7 +1,7 @@
 
 output
 __pycache__/
-output_pipeline.zip
+
 
 .venv/
 .env
@@ -13,7 +13,9 @@ vul_detection/dataset_clean
 SC_generation/node_modules/
 SC_generation/package-lock.json
 SC_generation/package.json
-SC_generation/output_temp/
+SC_generation/output(1st_)/
+SC_generation/output(2nd_)/
+temp.py
 
-# virtual_env for WSL(Windows Subsystem for Linux), to run gas_analyzer.py
+# different virtual_env to run gas_analyzer.py in WSL(Windows Subsystem for Linux)
 venv/ 

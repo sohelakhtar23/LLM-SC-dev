@@ -8,3 +8,7 @@ python-dotenv
 
 # download node.js in your system and add it to PATH
 # because we are using 'hardhat' which requires node.js to run
+
+matplotlib
+seaborn
+numpy
