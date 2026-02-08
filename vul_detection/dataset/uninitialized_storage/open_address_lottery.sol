@@ -87,7 +87,7 @@ contract OpenAddressLottery{
     
     function forceReseed() { //reseed initiated by the owner - for testing purposes
         require(msg.sender==owner);
-        // <yes> <report> OTHER - uninitialized storage
+        // <yes> <report> uninitialized_storage
         SeedComponents s;
         s.component1 = uint(msg.sender);
         s.component2 = uint256(block.blockhash(block.number - 1));

@@ -39,7 +39,9 @@ def normalize_vulnerability_type(vuln_type: Any) -> Optional[str]:
         "timemanipulation": "time_manipulation",
         "short_addresses": "short_addresses",
         "shortaddresses": "short_addresses",
-        "other": "other",
+        "uninitialized_storage": "uninitialized_storage",
+        "uninitializedstorage": "uninitialized_storage",
+        "uninitialized": "uninitialized_storage",
         "none": None,
         "null": None,
         "": None,
@@ -105,7 +107,7 @@ def calculate_metrics(tp: int, fp: int, fn: int) -> Dict[str, float]:
 def calculate_line_accuracy(
     pred_lines: List[int],
     gt_lines: List[int],
-    within_k: int = 5
+    within_k: int = 1
 ) -> Dict[str, Any]:
     """
     Calculate line localization accuracy.
@@ -226,15 +228,15 @@ def evaluate_model(
     line_metrics = {}
     if line_accuracy_results:
         exact_matches = sum(1 for r in line_accuracy_results if r["exact_match"])
-        within_5_matches = sum(1 for r in line_accuracy_results if r["within_5"])
+        within_1_matches = sum(1 for r in line_accuracy_results if r["within_1"])
         total_eligible = len(line_accuracy_results)
         
         line_metrics = {
             "eligible_cases": total_eligible,
             "exact_match_count": exact_matches,
             "exact_match_rate": round(exact_matches / total_eligible, 4) if total_eligible > 0 else 0.0,
-            "within_5_count": within_5_matches,
-            "within_5_rate": round(within_5_matches / total_eligible, 4) if total_eligible > 0 else 0.0,
+            "within_1_count": within_1_matches,
+            "within_1_rate": round(within_1_matches / total_eligible, 4) if total_eligible > 0 else 0.0,
         }
     
     return {
@@ -300,7 +302,7 @@ def main():
         "front_running",
         "time_manipulation",
         "short_addresses",
-        "other"
+        "uninitialized_storage"
     ]
     
     # Get models to evaluate
@@ -341,7 +343,7 @@ def main():
         print(f"  Total samples: {model_results['total_samples']}")
         print(f"  Accuracy: {model_results['accuracy']:.2%}")
         if model_results['line_localization']:
-            print(f"  Line within-5 rate: {model_results['line_localization']['within_5_rate']:.2%}")
+            print(f"  Line within-1 rate: {model_results['line_localization']['within_1_rate']:.2%}")
     
     # Save results
     output_dir = os.path.dirname(args.output)

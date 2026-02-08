@@ -106,10 +106,10 @@ def plot_model_comparison(
     accuracy = [results[m]['accuracy'] for m in models]
     
     # Get line localization rates if available
-    within_5_rates = []
+    within_1_rates = []
     for m in models:
         line_loc = results[m].get('line_localization', {})
-        within_5_rates.append(line_loc.get('within_5_rate', 0.0))
+        within_1_rates.append(line_loc.get('within_1_rate', 0.0))
     
     x = np.arange(len(models))
     width = 0.35
@@ -117,7 +117,7 @@ def plot_model_comparison(
     fig, ax = plt.subplots(figsize=(12, 6))
     
     bars1 = ax.bar(x - width/2, accuracy, width, label='Overall Accuracy', color='#3498db')
-    bars2 = ax.bar(x + width/2, within_5_rates, width, label='Line Within-5 Rate', color='#9b59b6')
+    bars2 = ax.bar(x + width/2, within_1_rates, width, label='Line Within-1 Rate', color='#9b59b6')
     
     ax.set_xlabel('Model', fontsize=12)
     ax.set_ylabel('Rate', fontsize=12)
@@ -229,7 +229,7 @@ def generate_markdown_report(
             md_lines.append("")
         
         # Comparison table
-        md_lines.append("| Model | Accuracy | Precision (Avg) | Recall (Avg) | F1 (Avg) | Line Within-5 |")
+        md_lines.append("| Model | Accuracy | Precision (Avg) | Recall (Avg) | F1 (Avg) | Line Within-1 |")
         md_lines.append("|-------|----------|-----------------|--------------|----------|---------------|")
         
         for model_name in sorted(models_data.keys()):
@@ -247,11 +247,11 @@ def generate_markdown_report(
             avg_f1 = np.mean(f1s) if f1s else 0
             
             line_loc = model_data.get('line_localization', {})
-            within_5 = line_loc.get('within_5_rate', 0)
+            within_1 = line_loc.get('within_1_rate', 0)
             
             md_lines.append(
                 f"| {model_name} | {accuracy:.2%} | {avg_precision:.2%} | "
-                f"{avg_recall:.2%} | {avg_f1:.2%} | {within_5:.2%} |"
+                f"{avg_recall:.2%} | {avg_f1:.2%} | {within_1:.2%} |"
             )
         
         md_lines.append("")
@@ -277,7 +277,7 @@ def generate_markdown_report(
             md_lines.append("")
             md_lines.append(f"- **Eligible Cases (Type-Correct):** {line_loc.get('eligible_cases', 0)}")
             md_lines.append(f"- **Exact Match Rate:** {line_loc.get('exact_match_rate', 0):.2%}")
-            md_lines.append(f"- **Within-5 Lines Rate:** {line_loc.get('within_5_rate', 0):.2%}")
+            md_lines.append(f"- **Within-1 Line Rate:** {line_loc.get('within_1_rate', 0):.2%}")
             md_lines.append("")
         
         # Per-class metrics chart
@@ -347,11 +347,11 @@ def generate_markdown_report(
         # Find best line localization
         best_line_model = max(
             models_data.items(),
-            key=lambda x: x[1].get('line_localization', {}).get('within_5_rate', 0)
+            key=lambda x: x[1].get('line_localization', {}).get('within_1_rate', 0)
         )
-        within_5 = best_line_model[1].get('line_localization', {}).get('within_5_rate', 0)
-        if within_5 > 0:
-            md_lines.append(f"- **Best Line Localization:** {best_line_model[0]} ({within_5:.2%} within 5 lines)")
+        within_1 = best_line_model[1].get('line_localization', {}).get('within_1_rate', 0)
+        if within_1 > 0:
+            md_lines.append(f"- **Best Line Localization:** {best_line_model[0]} ({within_1:.2%} within 1 line)")
         md_lines.append("")
     
     # Vulnerability-specific insights

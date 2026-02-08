@@ -105,7 +105,7 @@ Instructions:
    - front_running
    - time_manipulation
    - short_addresses
-   - other
+   - uninitialized_storage
 
 4. Provide a brief explanation (1-3 sentences)
 
@@ -145,7 +145,9 @@ def normalize_vulnerability_type(vuln_type: Any) -> Optional[str]:
         "timemanipulation": "time_manipulation",
         "short_addresses": "short_addresses",
         "shortaddresses": "short_addresses",
-        "other": "other",
+        "uninitialized_storage": "uninitialized_storage",
+        "uninitializedstorage": "uninitialized_storage",
+        "uninitialized": "uninitialized_storage",
         "none": None,
     }
     
@@ -173,7 +175,7 @@ def process_contract(
     model: str,
     contract_path: str,
     dataset_dir: str,
-    timeout: int = 180
+    timeout: int
 ) -> Dict[str, Any]:
     """Process a single contract file with the model."""
     # Read contract
@@ -263,7 +265,7 @@ def main():
     parser.add_argument(
         "--timeout",
         type=int,
-        default=180,
+        default=120,
         help="Timeout in seconds for each model call"
     )
     parser.add_argument(

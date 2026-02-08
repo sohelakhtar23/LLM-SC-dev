@@ -9,6 +9,7 @@ temp/
 results_saved/
 
 vul_detection/dataset_clean
+vul_detection/datset_try_clean
 
 SC_generation/node_modules/
 SC_generation/package-lock.json
